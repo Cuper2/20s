@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'clock';
+    src: url('./E1234.ttf');
+}
+*{
+    margin: 0;
+    padding: 0;
+}
