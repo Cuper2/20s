@@ -57,8 +57,8 @@
   startBtn.anchor.set(0.5);
   startBtn.y = 100;
   startBtn.x = app.screen.width / 2;
-  startBtn.interactive = true;
   startBtn.eventMode = "static";
+  startBtn.cursor = 'pointer';
 
   const restartBtn = new PIXI.Text({
     text: "Restart",
@@ -69,8 +69,8 @@
   restartBtn.anchor.set(0.5);
   restartBtn.y = 150;
   restartBtn.x = app.screen.width / 2;
-  restartBtn.interactive = true;
   restartBtn.eventMode = "static";
+  restartBtn.cursor = 'pointer';
 
   //Events
   startBtn.on("pointerdown", () => {
