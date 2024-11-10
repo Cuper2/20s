@@ -30,16 +30,16 @@
   counter.x = app.screen.width / 2;
 
   const counterBorder = new PIXI.Graphics().svg(
-    `
+      `
         <svg>
             <path d="M${
-              app.screen.width / 2 - counter.getSize().width / 2 - 20
-            } 0` +
+          app.screen.width / 2 - counter.getSize().width / 2 - 20
+      } 0` +
       `L ${app.screen.width / 2 - counter.getSize().width / 2} ${
-        counter.getSize().height + 10
+          counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2} ${
-        counter.getSize().height + 10
+          counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2 + 20} 0` +
       `Z" stroke="red" stroke-width="3" fill="#222222"/>
@@ -94,7 +94,7 @@
       const milliseconds = counterVal % 1000;
       if (counterVal > 0)
         counter.text = `${String(seconds).padStart(2, "0")}:${String(
-          milliseconds
+            milliseconds
         ).padStart(3, "0")}`;
       else {
         counter.text = "00:000";
@@ -111,10 +111,14 @@
 
   document.querySelector(".game-container").appendChild(app.canvas);
 
-  //menu
+  // menu Sekcja Jakuba Lewandowskiego
   const menuItems = document.querySelectorAll(".menu-item");
   const start = document.getElementById("start");
   const creators = document.getElementById("creators");
+  const howToPlay = document.getElementById("how-to-play");
+
+// Domyślnie ustawiamy, że element start jest aktywny
+  start.classList.add("active");
 
   const fadeOutElement = (element) => {
     element.style.transition = "opacity 2s";
@@ -124,12 +128,14 @@
     }, 2000);
   };
 
-  [start, creators].forEach((element) => {
+  [howToPlay, start, creators].forEach((element) => {
     if (element) {
       element.addEventListener("click", () => {
         fadeOutElement(start);
         fadeOutElement(creators);
-        if (element == start) {
+        fadeOutElement(howToPlay);
+        // Przechodzi do gry z timerem
+        if (element === start) {
           fadeOutElement(document.querySelector(".outer-container"));
         }
       });
@@ -140,6 +146,10 @@
     item.addEventListener("mouseover", () => {
       menuItems.forEach((el) => el.classList.remove("active"));
       item.classList.add("active");
+    });
+
+    item.addEventListener("mouseout", () => {
+      item.classList.remove("active");
     });
   });
 })();
