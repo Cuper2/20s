@@ -82,7 +82,8 @@
   });
   restartBtn.on("pointerdown", () => {
     counterVal = 20000;
-    isCounterStarted = true;
+    counter.text = '20:000';
+    isCounterStarted = false;
   });
 
   app.ticker.add((time) => {
