@@ -8,8 +8,11 @@ import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
         autoDensity: true, 
         resolution: 2,
         background: "#FFE4C4",
-        resizeTo: window});
-    await PIXI.Assets.load('E1234.ttf');
+        resizeTo: window
+    });
+    app.canvas.style.position = 'absolute';
+
+    const clockFont = await PIXI.Assets.load('E1234.ttf');
 
     //Counter
     let counterVal = 20000;
@@ -19,7 +22,7 @@ import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
         style:{
             fontSize: '64',
             fill: '0xFFFFFF',
-            fontFamily:'E1234'
+            fontFamily: clockFont.family
         }
     });
     counter.anchor.set(0.5);
@@ -50,7 +53,7 @@ import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
     startBtn.y = 100
     startBtn.x = app.screen.width / 2;
     startBtn.interactive = true;
-    startBtn.buttonMode = true;
+    startBtn.eventMode = 'static';
 
     const restartBtn = new PIXI.Text({
         text: 'Restart', 
@@ -62,7 +65,7 @@ import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
     restartBtn.y = 150;
     restartBtn.x = app.screen.width / 2;
     restartBtn.interactive = true;
-    restartBtn.buttonMode = true;
+    restartBtn.eventMode = 'static';
 
     //Events
     startBtn.on('pointerdown', () => {
