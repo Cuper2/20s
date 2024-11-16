@@ -1,4 +1,5 @@
 //import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
+import * as TABLE from "./table.js";
 
 (async () => {
   const app = new PIXI.Application();
@@ -30,16 +31,16 @@
   counter.x = app.screen.width / 2;
 
   const counterBorder = new PIXI.Graphics().svg(
-      `
+    `
         <svg>
             <path d="M${
-          app.screen.width / 2 - counter.getSize().width / 2 - 20
-      } 0` +
+              app.screen.width / 2 - counter.getSize().width / 2 - 20
+            } 0` +
       `L ${app.screen.width / 2 - counter.getSize().width / 2} ${
-          counter.getSize().height + 10
+        counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2} ${
-          counter.getSize().height + 10
+        counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2 + 20} 0` +
       `Z" stroke="red" stroke-width="3" fill="#222222"/>
@@ -58,7 +59,7 @@
   startBtn.y = 100;
   startBtn.x = app.screen.width / 2;
   startBtn.eventMode = "static";
-  startBtn.cursor = 'pointer';
+  startBtn.cursor = "pointer";
 
   const restartBtn = new PIXI.Text({
     text: "Restart",
@@ -70,7 +71,7 @@
   restartBtn.y = 150;
   restartBtn.x = app.screen.width / 2;
   restartBtn.eventMode = "static";
-  restartBtn.cursor = 'pointer';
+  restartBtn.cursor = "pointer";
 
   //Events
   startBtn.on("pointerdown", () => {
@@ -82,7 +83,7 @@
   });
   restartBtn.on("pointerdown", () => {
     counterVal = 20000;
-    counter.text = '20:000';
+    counter.text = "20:000";
     isCounterStarted = false;
   });
 
@@ -94,7 +95,7 @@
       const milliseconds = counterVal % 1000;
       if (counterVal > 0)
         counter.text = `${String(seconds).padStart(2, "0")}:${String(
-            milliseconds
+          milliseconds
         ).padStart(3, "0")}`;
       else {
         counter.text = "00:000";
@@ -104,6 +105,22 @@
     }
   });
 
+  //Grid
+  const tempTexture = await PIXI.Assets.load("temp.png");
+  const gridObjects = [
+    new TABLE.GridObj(1,0,tempTexture, () => alert('1')),
+    new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
+    new TABLE.GridObj(1,1,tempTexture, () => alert('3'))
+  ];
+  const gridObjectsL = [
+    
+  ];
+  const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, gridObjectsL);
+  grid.drawGrid();
+
+  grid.cells.forEach( element =>{
+    app.stage.addChild(element);
+  });
   app.stage.addChild(counterBorder);
   app.stage.addChild(counter);
   app.stage.addChild(startBtn);
@@ -111,35 +128,25 @@
 
   document.querySelector(".game-container").appendChild(app.canvas);
 
-  // menu Sekcja Jakuba Lewandowskiego
+  //Menu
   const menuItems = document.querySelectorAll(".menu-item");
-  const start = document.getElementById("start");
-  const creators = document.getElementById("creators");
-  const howToPlay = document.getElementById("how-to-play");
 
-// Domyślnie ustawiamy, że element start jest aktywny
   start.classList.add("active");
 
   const fadeOutElement = (element) => {
     element.style.transition = "opacity 2s";
     element.style.opacity = "0";
-    window.setTimeout(() => {
-      element.style.display = "none";
-    }, 2000);
   };
 
-  [howToPlay, start, creators].forEach((element) => {
-    if (element) {
-      element.addEventListener("click", () => {
-        fadeOutElement(start);
-        fadeOutElement(creators);
-        fadeOutElement(howToPlay);
-        // Przechodzi do gry z timerem
-        if (element === start) {
-          fadeOutElement(document.querySelector(".outer-container"));
-        }
-      });
-    }
+  menuItems.forEach((element) => {
+    element.addEventListener("click", () => {
+      menuItems.forEach((item) => fadeOutElement(item));
+
+      if (element === start) {
+        fadeOutElement(document.querySelector(".outer-container"));
+        document.querySelector(".outer-container").style.display = 'none';
+      }
+    });
   });
 
   menuItems.forEach((item) => {
