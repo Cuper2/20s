@@ -1,7 +1,26 @@
+/* Resetowanie marginesów i pełna wysokość dla body */
 body,
 .outer-container {
   margin: 0;
   background-color: #000;
+  height: 100vh;
+  width: 100%;
+}
+
+#menu img {
+  width: 700px ;
+  height: auto;
+  margin-bottom: 100px;
+
+}
+
+
+body {
+  background: #000 url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1920 1080%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%22300%22 cy=%22200%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%22500%22 cy=%221000%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%221500%22 cy=%221000%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%221100%22 cy=%22200%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%22300%22 cy=%221000%22 r=%221%22 fill=%22%23ffffff%22/%3E%3Ccircle cx=%221400%22 cy=%22250%22 r=%221%22 fill=%22%23ffffff%22/%3E%3C/svg%3E');
+  background-size: 100px 100px;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+  transition: background 1s ease-in-out;
+  color: #fff;
 }
 
 .outer-container {
@@ -11,6 +30,10 @@ body,
   align-items: center;
   width: 100%;
   height: 100%;
+  animation: starfield 100s linear infinite;
+  background: #000;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+  transition: background 1s ease-in-out;
 }
 
 .navbar {
@@ -19,6 +42,13 @@ body,
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 1;
+  padding: 10px;
+}
+
+.navbar span {
+  color: #fff;
+  font-weight: bold;
 }
 
 .centered-content ul li {
@@ -28,15 +58,6 @@ body,
   margin: 20px 0;
   cursor: pointer;
   transition: color 0.2s;
-}
-
-.navbar span {
-  color: #fff;
-  font-weight: bold;
-}
-
-.sound-buttons span {
-  margin-left: 0.5em;
 }
 
 .centered-content {
@@ -58,7 +79,6 @@ body,
   transition: all 0.2s ease;
 }
 
-
 .menu-item.active::before {
   left: -40px;
   content: "❮";
@@ -75,7 +95,7 @@ body,
 
 #start,
 #creators,
-#how-to-play{
+#how-to-play {
   display: flex;
   font-size: 30px;
   justify-content: center;
@@ -84,14 +104,40 @@ body,
   transition: all 0.8s ease-in-out;
   margin: 10px auto;
   transform: scaleY(0.99);
+  padding: 15px 30px;
+  background: #111;
+  border-radius: 8px;
+  color: #eef6f4;
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.8), 0 0 20px rgba(0, 255, 204, 0.8);
 }
 
-.menu-item:hover::before,
-.menu-item:hover::after {
-  display: inline-block;
+#start:hover,
+#creators:hover,
+#how-to-play:hover {
+  background: #00ff99;
+  transform: scale(1.1);
+  box-shadow: 0 2px 15px rgba(0, 255, 204, 1), 0 0 25px rgba(0, 255, 204, 0.8);
 }
 
-.menu-item::before,
-.menu-item::after {
-  display: none;
+#start:active,
+#creators:active,
+#how-to-play:active {
+  background: #222222;
+  box-shadow: 0 4px 25px rgba(0, 255, 204, 0.9);
+  transform: scale(1);
+}
+/* raczej te guziki od wyciszania i odciszania nie będą potrzebne*/
+/*.sound-buttons span {*/
+/*  margin-left: 0.5em;*/
+/*}*/
+
+/*.sound-buttons span:hover {*/
+/*  color: #ffffff;*/
+/*  transform: scale(1.1);*/
+/*}*/
+
+.menu-item.clicked {
+  background: #222222;
+  box-shadow: 0 4px 20px rgba(0, 255, 204, 0.6);
+  transition: background 1s ease-in-out;
 }
