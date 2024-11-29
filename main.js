@@ -113,7 +113,7 @@ import * as TABLE from "./table.js";
     new TABLE.GridObj(1,1,tempTexture, () => alert('3'))
   ];
   const gridObjectsL = [
-    
+
   ];
   const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, gridObjectsL);
   grid.drawGrid();
@@ -135,7 +135,6 @@ import * as TABLE from "./table.js";
 
   const fadeOutElement = (element) => {
     element.style.transition = "opacity 2s";
-    element.style.opacity = "0";
   };
 
   menuItems.forEach((element) => {
@@ -159,4 +158,98 @@ import * as TABLE from "./table.js";
       item.classList.remove("active");
     });
   });
+
+  const { Graphics } = PIXI;
+  const graphics = new Graphics();
+  app.stage.addChild(graphics);
+
+// Funkcja do rysowania stołu i dynamicznego dopasowania rozmiarów
+  function drawTable() {
+    const screenWidth = app.screen.width;
+    const screenHeight = app.screen.height;
+
+    const tableWidth = screenWidth * 0.9;
+    const tableHeight = screenHeight * 0.3;
+    const tableX = (screenWidth - tableWidth) / 2;
+    const tableY = screenHeight * 0.6;
+
+    const shadowHeight = screenHeight * 0.02;
+
+    graphics.rect(tableX, tableY, tableWidth, tableHeight); // Blat stołu
+    graphics.fill(0x333333);
+
+    graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight); // Cień stołu
+    graphics.fill(0x6C6F72);
+  }
+
+// Wczytanie tekstury drzwi i ustawienie dynamicznych pozycji
+  async function loadDoor() {
+    const doorTexture = await PIXI.Assets.load("door.png");
+    const doorSprite = new PIXI.Sprite(doorTexture);
+
+    doorSprite.anchor.set(0.5); // Centrowanie drzwi
+    doorSprite.width = app.screen.width * 0.5; // Szerokość jako 10% szerokości ekranu
+    doorSprite.height = doorSprite.width * 2; // Proporcjonalna wysokość
+    doorSprite.x = app.screen.width / 2;
+    doorSprite.y = app.screen.height / 2;
+
+    app.stage.addChild(doorSprite);
+  }
+
+// Wywołanie funkcji po załadowaniu aplikacji
+  drawTable();
+  loadDoor();
+
+// Dynamiczne dopasowanie po zmianie rozmiaru okna
+  window.addEventListener("resize", () => {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+    drawTable();
+  });
+  // Modal and menu elements
+  const howToPlayButton = document.getElementById("how-to-play");
+  const menu = document.getElementById("menu");
+  const modal = document.getElementById("how-to-play-modal");
+  const closeButton = document.getElementById("close-modal");
+
+// Typing effect
+  const typewriterText = document.getElementById("typewriter-text");
+  const typewriterContent = `Welcome to 20 Seconds to Chaos!
+Your mission is to manage the malfunctioning control panel. 
+Instructions are etched into the walls—some are helpful, some are not. 
+Time is your greatest enemy.`;
+
+  let typingIndex = 0;
+  const typingSpeed = 50; // Milliseconds per character
+
+  function typeWriterEffect() {
+    if (typingIndex < typewriterContent.length) {
+      typewriterText.textContent += typewriterContent.charAt(typingIndex);
+      typingIndex++;
+      setTimeout(typeWriterEffect, typingSpeed);
+    }
+  }
+
+// Show modal and hide menu
+  howToPlayButton.addEventListener("click", () => {
+    modal.classList.remove("hidden"); // Pokaż modal
+    menu.classList.add("hidden-menu"); // Ukryj menu
+    typewriterText.textContent = ""; // Reset tekstu
+    typingIndex = 0; // Reset indeksu
+    typeWriterEffect(); // Rozpocznij efekt pisania
+  });
+
+// Close modal and show menu
+  closeButton.addEventListener("click", () => {
+    modal.classList.add("hidden"); // Ukryj modal
+    menu.classList.remove("hidden-menu"); // Pokaż menu
+  });
+
+// Close modal by clicking outside it
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.add("hidden"); // Ukryj modal
+      menu.classList.remove("hidden-menu"); // Pokaż menu
+    }
+  });
+
 })();
