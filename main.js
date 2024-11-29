@@ -163,7 +163,6 @@ import * as TABLE from "./table.js";
   const graphics = new Graphics();
   app.stage.addChild(graphics);
 
-// Funkcja do rysowania stołu i dynamicznego dopasowania rozmiarów
   function drawTable() {
     const screenWidth = app.screen.width;
     const screenHeight = app.screen.height;
@@ -182,73 +181,100 @@ import * as TABLE from "./table.js";
     graphics.fill(0x6C6F72);
   }
 
-// Wczytanie tekstury drzwi i ustawienie dynamicznych pozycji
   async function loadDoor() {
     const doorTexture = await PIXI.Assets.load("door.png");
     const doorSprite = new PIXI.Sprite(doorTexture);
 
-    doorSprite.anchor.set(0.5); // Centrowanie drzwi
-    doorSprite.width = app.screen.width * 0.5; // Szerokość jako 10% szerokości ekranu
-    doorSprite.height = doorSprite.width * 2; // Proporcjonalna wysokość
+    doorSprite.anchor.set(0.5);
+    doorSprite.width = app.screen.width * 0.5;
+    doorSprite.height = doorSprite.width * 2;
     doorSprite.x = app.screen.width / 2;
     doorSprite.y = app.screen.height / 2;
 
     app.stage.addChild(doorSprite);
   }
 
-// Wywołanie funkcji po załadowaniu aplikacji
   drawTable();
   loadDoor();
 
-// Dynamiczne dopasowanie po zmianie rozmiaru okna
   window.addEventListener("resize", () => {
     app.renderer.resize(window.innerWidth, window.innerHeight);
     drawTable();
   });
   // Modal and menu elements
   const howToPlayButton = document.getElementById("how-to-play");
+  const aboutCreatorsButton = document.getElementById("creators");
   const menu = document.getElementById("menu");
-  const modal = document.getElementById("how-to-play-modal");
-  const closeButton = document.getElementById("close-modal");
+
+// Modyfikacja: dodajemy różne modale
+  const modalHowToPlay = document.getElementById("how-to-play-modal");
+  const modalAboutCreators = document.getElementById("about-creators-modal");
+
+// Przyciski zamknięcia
+  const closeButtonHowToPlay = document.getElementById("close-modal");
+  const closeButtonAboutCreators = document.getElementById("close-about-creators");
 
 // Typing effect
-  const typewriterText = document.getElementById("typewriter-text");
-  const typewriterContent = `Welcome to 20 Seconds to Chaos!
-Your mission is to manage the malfunctioning control panel. 
-Instructions are etched into the walls—some are helpful, some are not. 
-Time is your greatest enemy.`;
+  const typewriterText = document.getElementById("typewriter-text-play");
+  const typewriterCreators = document.getElementById("typewriter-text-creators");
+
+  const typewriterContentPlay = `Welcome to 20 Seconds to Chaos! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
+  const typewriterContentCreators = `The creators of this game are passionate about mixing humor and horror. They've poured their creativity into making this a thrilling experience.`;
 
   let typingIndex = 0;
-  const typingSpeed = 50; // Milliseconds per character
+  let typingIndexCreators = 0;
+  const typingSpeed = 50;
 
-  function typeWriterEffect() {
-    if (typingIndex < typewriterContent.length) {
-      typewriterText.textContent += typewriterContent.charAt(typingIndex);
+  function typeWriterPlay() {
+    if (typingIndex < typewriterContentPlay.length) {
+      typewriterText.textContent += typewriterContentPlay.charAt(typingIndex);
       typingIndex++;
-      setTimeout(typeWriterEffect, typingSpeed);
+      setTimeout(typeWriterPlay, typingSpeed);
     }
   }
 
-// Show modal and hide menu
+  function typeWriterCreators() {
+    if (typingIndexCreators < typewriterContentCreators.length) {
+      typewriterCreators.textContent += typewriterContentCreators.charAt(typingIndexCreators);
+      typingIndexCreators++;
+      setTimeout(typeWriterCreators, typingSpeed);
+    }
+  }
+
+// Wyświetlanie modala "How to Play"
   howToPlayButton.addEventListener("click", () => {
-    modal.classList.remove("hidden"); // Pokaż modal
+    modalHowToPlay.classList.remove("hidden"); // Pokaż modal o grze
     menu.classList.add("hidden-menu"); // Ukryj menu
     typewriterText.textContent = ""; // Reset tekstu
     typingIndex = 0; // Reset indeksu
-    typeWriterEffect(); // Rozpocznij efekt pisania
+    typeWriterPlay(); // Rozpocznij efekt pisania
   });
 
-// Close modal and show menu
-  closeButton.addEventListener("click", () => {
-    modal.classList.add("hidden"); // Ukryj modal
-    menu.classList.remove("hidden-menu"); // Pokaż menu
+  aboutCreatorsButton.addEventListener("click", () => {
+    modalAboutCreators.classList.remove("hidden");
+    menu.classList.add("hidden-menu");
+    typewriterCreators.textContent = "";
+    typingIndexCreators = 0;
+    typeWriterCreators();
   });
 
-// Close modal by clicking outside it
+  closeButtonHowToPlay.addEventListener("click", () => {
+    modalHowToPlay.classList.add("hidden");
+    menu.classList.remove("hidden-menu");
+  });
+
+  closeButtonAboutCreators.addEventListener("click", () => {
+    modalAboutCreators.classList.add("hidden")
+    menu.classList.remove("hidden-menu");
+  });
+
   window.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.classList.add("hidden"); // Ukryj modal
-      menu.classList.remove("hidden-menu"); // Pokaż menu
+    if (event.target === modalHowToPlay) {
+      modalHowToPlay.classList.add("hidden");
+      menu.classList.remove("hidden-menu");
+    } else if (event.target === modalAboutCreators) {
+      modalAboutCreators.classList.add("hidden");
+      menu.classList.remove("hidden-menu");
     }
   });
 

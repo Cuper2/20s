@@ -126,15 +126,6 @@ body {
   box-shadow: 0 4px 25px rgba(0, 255, 204, 0.9);
   transform: scale(1);
 }
-/* raczej te guziki od wyciszania i odciszania nie będą potrzebne*/
-/*.sound-buttons span {*/
-/*  margin-left: 0.5em;*/
-/*}*/
-
-/*.sound-buttons span:hover {*/
-/*  color: #ffffff;*/
-/*  transform: scale(1.1);*/
-/*}*/
 
 .menu-item.clicked {
   background: #222222;
@@ -193,7 +184,7 @@ body {
   display: inline-block;
 }
 
-/* Ukrywanie menu */
 .hidden-menu {
   display: none;
 }
+
