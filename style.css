@@ -179,9 +179,9 @@ body {
 #typewriter-text {
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.2rem;
-  white-space: pre-wrap;
   overflow: hidden;
   display: inline-block;
+  white-space: pre;
 }
 
 .hidden-menu {

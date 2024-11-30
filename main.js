@@ -174,10 +174,10 @@ import * as TABLE from "./table.js";
 
     const shadowHeight = screenHeight * 0.02;
 
-    graphics.rect(tableX, tableY, tableWidth, tableHeight); // Blat stołu
+    graphics.rect(tableX, tableY, tableWidth, tableHeight)
     graphics.fill(0x333333);
 
-    graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight); // Cień stołu
+    graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight);
     graphics.fill(0x6C6F72);
   }
 
@@ -201,25 +201,24 @@ import * as TABLE from "./table.js";
     app.renderer.resize(window.innerWidth, window.innerHeight);
     drawTable();
   });
-  // Modal and menu elements
   const howToPlayButton = document.getElementById("how-to-play");
   const aboutCreatorsButton = document.getElementById("creators");
   const menu = document.getElementById("menu");
 
-// Modyfikacja: dodajemy różne modale
   const modalHowToPlay = document.getElementById("how-to-play-modal");
   const modalAboutCreators = document.getElementById("about-creators-modal");
 
-// Przyciski zamknięcia
   const closeButtonHowToPlay = document.getElementById("close-modal");
   const closeButtonAboutCreators = document.getElementById("close-about-creators");
 
-// Typing effect
   const typewriterText = document.getElementById("typewriter-text-play");
   const typewriterCreators = document.getElementById("typewriter-text-creators");
 
   const typewriterContentPlay = `Welcome to 20 Seconds to Chaos! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
-  const typewriterContentCreators = `The creators of this game are passionate about mixing humor and horror. They've poured their creativity into making this a thrilling experience.`;
+  const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer Loiks -- – Lead programmer, Game Designer";
+
+
+
 
   let typingIndex = 0;
   let typingIndexCreators = 0;
@@ -241,13 +240,12 @@ import * as TABLE from "./table.js";
     }
   }
 
-// Wyświetlanie modala "How to Play"
   howToPlayButton.addEventListener("click", () => {
-    modalHowToPlay.classList.remove("hidden"); // Pokaż modal o grze
-    menu.classList.add("hidden-menu"); // Ukryj menu
-    typewriterText.textContent = ""; // Reset tekstu
-    typingIndex = 0; // Reset indeksu
-    typeWriterPlay(); // Rozpocznij efekt pisania
+    modalHowToPlay.classList.remove("hidden");
+    menu.classList.add("hidden-menu")
+    typewriterText.textContent = "";
+    typingIndex = 0;
+    typeWriterPlay();
   });
 
   aboutCreatorsButton.addEventListener("click", () => {
