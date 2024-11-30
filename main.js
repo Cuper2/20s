@@ -105,28 +105,7 @@ import * as TABLE from "./table.js";
     }
   });
 
-  //Grid
-  const tempTexture = await PIXI.Assets.load("temp.png");
-  const gridObjects = [
-    new TABLE.GridObj(1,0,tempTexture, () => alert('1')),
-    new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
-    new TABLE.GridObj(1,1,tempTexture, () => alert('3'))
-  ];
-  const gridObjectsL = [
 
-  ];
-  const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, gridObjectsL);
-  grid.drawGrid();
-
-  grid.cells.forEach( element =>{
-    app.stage.addChild(element);
-  });
-  app.stage.addChild(counterBorder);
-  app.stage.addChild(counter);
-  app.stage.addChild(startBtn);
-  app.stage.addChild(restartBtn);
-
-  document.querySelector(".game-container").appendChild(app.canvas);
 
   //Menu
   const menuItems = document.querySelectorAll(".menu-item");
@@ -201,6 +180,35 @@ import * as TABLE from "./table.js";
     app.renderer.resize(window.innerWidth, window.innerHeight);
     drawTable();
   });
+  //Grid
+  const btnTexture1 = await PIXI.Assets.load("btn1.png");
+  const btnTextureArrow = await PIXI.Assets.load("btn-arrow.png");
+  const btnTexture3 = await PIXI.Assets.load("btn3.png");
+  const tempTexture = await PIXI.Assets.load("temp.png");
+  const gridObjects = [
+    new TABLE.GridObj(1,0,tempTexture, () => alert('1')),
+    new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
+    new TABLE.GridObj(10,3,btnTexture3, () => alert('2')),
+    new TABLE.GridObj(10,5,btnTextureArrow, () => alert('2')),
+    new TABLE.GridObj(10,3,btnTexture1, () => alert('2')),
+
+
+  ];
+  const gridObjectsL = [
+
+  ];
+  const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, gridObjectsL);
+  grid.drawGrid();
+
+  grid.cells.forEach( element =>{
+    app.stage.addChild(element);
+  });
+  app.stage.addChild(counterBorder);
+  app.stage.addChild(counter);
+  app.stage.addChild(startBtn);
+  app.stage.addChild(restartBtn);
+
+  document.querySelector(".game-container").appendChild(app.canvas);
   const howToPlayButton = document.getElementById("how-to-play");
   const aboutCreatorsButton = document.getElementById("creators");
   const menu = document.getElementById("menu");
@@ -216,9 +224,6 @@ import * as TABLE from "./table.js";
 
   const typewriterContentPlay = `Welcome to 20 Seconds to Chaos! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
   const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer Loiks -- – Lead programmer, Game Designer";
-
-
-
 
   let typingIndex = 0;
   let typingIndexCreators = 0;
