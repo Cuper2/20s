@@ -8,7 +8,7 @@ import * as TABLE from "./table.js";
     antialias: true,
     autoDensity: true,
     resolution: 2,
-    background: "#FFE4C4",
+    background: "#4e4d4a",
     resizeTo: window,
   });
   app.canvas.style.position = "absolute";
@@ -190,7 +190,7 @@ import * as TABLE from "./table.js";
     new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
     new TABLE.GridObj(10,3,btnTexture3, () => alert('2')),
     new TABLE.GridObj(10,5,btnTextureArrow, () => alert('2')),
-    new TABLE.GridObj(10,3,btnTexture1, () => alert('2')),
+    new TABLE.GridObj(10,3,btnTexture1, () => startS()),
 
 
   ];
@@ -280,5 +280,61 @@ import * as TABLE from "./table.js";
       menu.classList.remove("hidden-menu");
     }
   });
+
+  const smt = document.getElementById("mini");
+  smt.style.display = "none";
+  const startButton = document.getElementById("start-game");
+  const temperatureDisplay = document.getElementById("temperature-display");
+  const temperatureButtons = document.getElementById("temperature-buttons");
+  const coolButton = document.getElementById("cool-button");
+  const heatButton = document.getElementById("heat-button");
+
+  let currentTemperature = 50; // Początkowa temperatura
+  let targetTemperature;
+
+  // Funkcja uruchamiająca minigierkę
+  function startS ()  {
+    mini.style.display = "flex";
+    console.log("ok")
+    startButton.style.display = 'none'; // Ukryj przycisk start
+    temperatureButtons.style.display = 'block'; // Pokaż przyciski
+
+    // Wylosuj docelową temperaturę
+    targetTemperature = Math.floor(Math.random() * 70);
+    temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
+  };
+
+  // Funkcja schładzania temperatury
+  coolButton.addEventListener('click', () => {
+    currentTemperature--;
+    updateTemperature();
+  });
+
+  // Funkcja podgrzewania temperatury
+  heatButton.addEventListener('click', () => {
+    currentTemperature++;
+    updateTemperature();
+  });
+
+  // Aktualizuje wyświetlaną temperaturę i sprawdza, czy jest poprawna
+  function updateTemperature() {
+    temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
+
+    // Sprawdź, czy temperatura jest odpowiednia
+    if (currentTemperature === targetTemperature) {
+      temperatureDisplay.textContent = `Brawo! Ustawiłeś właściwą temperaturę: ${targetTemperature}°C.`;
+      endGame();
+    } else if (currentTemperature < 0 || currentTemperature > 70) {
+      temperatureDisplay.textContent = `Temperatura jest poza zakresem! Ustaw ją pomiędzy 0 a 100°C.`;
+    }
+  }
+
+  // Zakończenie gry
+  function endGame() {
+    // Ukryj wszystkie elementy związane z minigierką
+    temperatureButtons.style.display = 'none';
+    temperatureDisplay.style.display = 'none';
+
+  }
 
 })();

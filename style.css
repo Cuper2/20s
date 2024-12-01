@@ -188,3 +188,37 @@ body {
   display: none;
 }
 
+/*styles for minigame #1*/
+
+#mini {
+  display: none;
+  position: relative;
+  text-align: center;
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+#temperature-display {
+  margin-top: 20px;
+  font-size: 24px;
+}
+#temperature-buttons {
+  margin-top: 20px;
+}
+#temperature-buttons button {
+  margin: 0 10px;
+}
+#mini {
+  display: none;
+  justify-content: center;
+  align-items: flex-start; /* Ustawiamy element na górze */
+  height: 20vh;
+  padding-top: 10%; /* Przesuwamy zawartość w górę o 10% wysokości ekranu */
+  text-align: center;
+}
