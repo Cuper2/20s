@@ -190,7 +190,7 @@ import * as TABLE from "./table.js";
     new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
     new TABLE.GridObj(10,3,btnTexture3, () => alert('2')),
     new TABLE.GridObj(10,5,btnTextureArrow, () => alert('2')),
-    new TABLE.GridObj(10,3,btnTexture1, () => startS()),
+    new TABLE.GridObj(10,3,btnTexture1, () => startMiniGame()),
 
 
   ];
@@ -289,38 +289,35 @@ import * as TABLE from "./table.js";
   const coolButton = document.getElementById("cool-button");
   const heatButton = document.getElementById("heat-button");
 
-  let currentTemperature = 50; // Początkowa temperatura
+  let currentTemperature = 50;
   let targetTemperature;
 
-  // Funkcja uruchamiająca minigierkę
-  function startS ()  {
+  //
+  function startMiniGame ()  {
     mini.style.display = "flex";
     console.log("ok")
-    startButton.style.display = 'none'; // Ukryj przycisk start
+    startButton.style.display = 'none';
     temperatureButtons.style.display = 'block'; // Pokaż przyciski
 
-    // Wylosuj docelową temperaturę
     targetTemperature = Math.floor(Math.random() * 70);
     temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
   };
 
-  // Funkcja schładzania temperatury
+  //deleting temperature
   coolButton.addEventListener('click', () => {
     currentTemperature--;
     updateTemperature();
   });
 
-  // Funkcja podgrzewania temperatury
+  //adding temperature
   heatButton.addEventListener('click', () => {
     currentTemperature++;
     updateTemperature();
   });
-
-  // Aktualizuje wyświetlaną temperaturę i sprawdza, czy jest poprawna
+  //checks and updates temperature
   function updateTemperature() {
     temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
 
-    // Sprawdź, czy temperatura jest odpowiednia
     if (currentTemperature === targetTemperature) {
       temperatureDisplay.textContent = `Brawo! Ustawiłeś właściwą temperaturę: ${targetTemperature}°C.`;
       endGame();
@@ -329,9 +326,7 @@ import * as TABLE from "./table.js";
     }
   }
 
-  // Zakończenie gry
   function endGame() {
-    // Ukryj wszystkie elementy związane z minigierką
     temperatureButtons.style.display = 'none';
     temperatureDisplay.style.display = 'none';
 

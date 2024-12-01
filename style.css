@@ -217,8 +217,8 @@ button {
 #mini {
   display: none;
   justify-content: center;
-  align-items: flex-start; /* Ustawiamy element na górze */
+  align-items: flex-start;
   height: 20vh;
-  padding-top: 10%; /* Przesuwamy zawartość w górę o 10% wysokości ekranu */
+  padding-top: 10%;
   text-align: center;
 }
