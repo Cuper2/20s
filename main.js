@@ -143,70 +143,95 @@ import * as TABLE from "./table.js";
   app.stage.addChild(graphics);
 
   function drawTable() {
+    const tableHeight = 350;
     const screenWidth = app.screen.width;
     const screenHeight = app.screen.height;
 
-    const tableWidth = screenWidth * 0.9;
-    const tableHeight = screenHeight * 0.3;
-    const tableX = (screenWidth - tableWidth) / 2;
-    const tableY = screenHeight * 0.6;
+    const tableWidth = screenWidth - 100;
 
-    const shadowHeight = screenHeight * 0.02;
+    const tableX = 50;
+    const tableY = (screenHeight - tableHeight) / 2 + 100;
 
-    graphics.rect(tableX, tableY, tableWidth, tableHeight)
+    const shadowHeight = 20;
+
+    // Rysowanie stołu
+    graphics.rect(tableX, tableY, tableWidth, tableHeight);
     graphics.fill(0x333333);
 
+    // Cień stołu
     graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight);
     graphics.fill(0x6C6F72);
   }
 
-  async function loadDoor() {
-    const doorTexture = await PIXI.Assets.load("door.png");
-    const doorSprite = new PIXI.Sprite(doorTexture);
-
-    doorSprite.anchor.set(0.5);
-    doorSprite.width = app.screen.width * 0.5;
-    doorSprite.height = doorSprite.width * 2;
-    doorSprite.x = app.screen.width / 2;
-    doorSprite.y = app.screen.height / 2;
-
-    app.stage.addChild(doorSprite);
-  }
-
   drawTable();
-  loadDoor();
 
   window.addEventListener("resize", () => {
     app.renderer.resize(window.innerWidth, window.innerHeight);
     drawTable();
   });
-  //Grid
-  const btnTexture1 = await PIXI.Assets.load("btn1.png");
+
+  //textures
   const btnTextureArrow = await PIXI.Assets.load("btn-arrow.png");
-  const btnTexture3 = await PIXI.Assets.load("btn3.png");
-  const tempTexture = await PIXI.Assets.load("temp.png");
+  const btnDontPress = await PIXI.Assets.load("btn3.png");
+
+
   const gridObjects = [
-    new TABLE.GridObj(1,0,tempTexture, () => alert('1')),
-    new TABLE.GridObj(2,0,tempTexture, () => alert('2')),
-    new TABLE.GridObj(10,3,btnTexture3, () => alert('2')),
-    new TABLE.GridObj(10,5,btnTextureArrow, () => alert('2')),
-    new TABLE.GridObj(10,3,btnTexture1, () => startMiniGame()),
-
-
+    new TABLE.GridObj(0, 0, btnTextureArrow, () => alert('Kliknięto przycisk Arrow')),
+    new TABLE.GridObj(0, 0, btnDontPress, () => alert('Kliknięto przycisk Don\'t Press')),
   ];
-  const gridObjectsL = [
 
-  ];
-  const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, gridObjectsL);
+// Tworzymy siatkę
+  const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, []);
+
+// Ustalamy pozycję stołu
+  const tableWidth = app.screen.width * 0.9; // Szerokość stołu
+  const tableHeight = app.screen.height * 0.3; // Wysokość stołu
+  const tableX = (app.screen.width - tableWidth) / 2; // Pozycja X stołu
+  const tableY = app.screen.height * 0.6; // Pozycja Y stołu
+
+// Obliczamy całkowitą szerokość przycisków z uwzględnieniem odstępów
+  const totalButtonWidth = gridObjects.reduce((sum, obj) => sum + obj.texture.width, 0);
+  const buttonSpacing = 20; // Odstęp między przyciskami
+  const totalSpacingWidth = buttonSpacing * (gridObjects.length - 1); // Całkowity odstęp między przyciskami
+
+// Obliczamy początkową pozycję X, aby przyciski były wyśrodkowane
+  let startX = tableX + (tableWidth - totalButtonWidth - totalSpacingWidth) / 2;
+
+// Ustawiamy pozycje przycisków w jednej linii poziomej z tym samym Oy
+  const tableCenterY = tableY + tableHeight / 2; // Wysokość stołu, środek
+
+  gridObjects.forEach((obj, index) => {
+    const buttonX = startX + index * (obj.texture.width + buttonSpacing); // Pozycja X przycisku
+
+    obj.x = buttonX; // Pozycja X przycisku
+    obj.y = tableCenterY - obj.texture.height / 2; // Wyśrodkowanie przycisku na osi Y
+
+    // Debug: Sprawdzamy pozycje
+    console.log(`Przycisk ${index + 1}: x = ${obj.x}, y = ${obj.y}`);
+  });
+
+// Rysowanie siatki i dodawanie elementów do sceny
   grid.drawGrid();
-
-  grid.cells.forEach( element =>{
+  grid.cells.forEach((element) => {
     app.stage.addChild(element);
   });
+
+// Dodajemy przyciski do sceny
+  gridObjects.forEach((obj) => {
+    const buttonSprite = new PIXI.Sprite(obj.texture);
+    buttonSprite.x = obj.x;
+    buttonSprite.y = obj.y;
+    buttonSprite.interactive = true;
+    buttonSprite.buttonMode = true;
+    buttonSprite.on("pointerdown", obj.onclick);
+    app.stage.addChild(buttonSprite);
+  });
+
   app.stage.addChild(counterBorder);
   app.stage.addChild(counter);
   app.stage.addChild(startBtn);
   app.stage.addChild(restartBtn);
+
 
   document.querySelector(".game-container").appendChild(app.canvas);
   const howToPlayButton = document.getElementById("how-to-play");
@@ -222,8 +247,8 @@ import * as TABLE from "./table.js";
   const typewriterText = document.getElementById("typewriter-text-play");
   const typewriterCreators = document.getElementById("typewriter-text-creators");
 
-  const typewriterContentPlay = `Welcome to 20 Seconds to Chaos! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
-  const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer Loiks -- – Lead programmer, Game Designer";
+  const typewriterContentPlay = `Welcome to 20 Seconds! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
+  const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer Loiks – Lead programmer, Game Designer";
 
   let typingIndex = 0;
   let typingIndexCreators = 0;
