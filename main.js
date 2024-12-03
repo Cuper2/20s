@@ -180,10 +180,8 @@ import * as TABLE from "./table.js";
     new TABLE.GridObj(0, 0, btnDontPress, () => alert('Kliknięto przycisk Don\'t Press')),
   ];
 
-// Tworzymy siatkę
   const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, []);
 
-// Ustalamy pozycję stołu
   const tableWidth = app.screen.width * 0.9; // Szerokość stołu
   const tableHeight = app.screen.height * 0.3; // Wysokość stołu
   const tableX = (app.screen.width - tableWidth) / 2; // Pozycja X stołu
@@ -191,20 +189,20 @@ import * as TABLE from "./table.js";
 
 // Obliczamy całkowitą szerokość przycisków z uwzględnieniem odstępów
   const totalButtonWidth = gridObjects.reduce((sum, obj) => sum + obj.texture.width, 0);
-  const buttonSpacing = 20; // Odstęp między przyciskami
-  const totalSpacingWidth = buttonSpacing * (gridObjects.length - 1); // Całkowity odstęp między przyciskami
+  const buttonSpacing = -300; // Odstęp między przyciskami
+  const totalSpacingWidth = buttonSpacing * (gridObjects.length - 1);
 
 // Obliczamy początkową pozycję X, aby przyciski były wyśrodkowane
   let startX = tableX + (tableWidth - totalButtonWidth - totalSpacingWidth) / 2;
 
 // Ustawiamy pozycje przycisków w jednej linii poziomej z tym samym Oy
-  const tableCenterY = tableY + tableHeight / 2; // Wysokość stołu, środek
+  const tableCenterY = tableY + tableHeight; // Wysokość stołu, środek
 
   gridObjects.forEach((obj, index) => {
     const buttonX = startX + index * (obj.texture.width + buttonSpacing); // Pozycja X przycisku
 
     obj.x = buttonX; // Pozycja X przycisku
-    obj.y = tableCenterY - obj.texture.height / 2; // Wyśrodkowanie przycisku na osi Y
+    obj.y = tableCenterY - obj.texture.height;
 
     // Debug: Sprawdzamy pozycje
     console.log(`Przycisk ${index + 1}: x = ${obj.x}, y = ${obj.y}`);
