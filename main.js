@@ -1,4 +1,3 @@
-//import * as PIXI from './node_modules/pixi.js/dist/pixi.mjs';
 import * as TABLE from "./table.js";
 
 (async () => {
@@ -31,24 +30,43 @@ import * as TABLE from "./table.js";
   counter.x = app.screen.width / 2;
 
   const counterBorder = new PIXI.Graphics().svg(
-    `
+      `
         <svg>
             <path d="M${
-              app.screen.width / 2 - counter.getSize().width / 2 - 20
-            } 0` +
+          app.screen.width / 2 - counter.getSize().width / 2 - 20
+      } 0` +
       `L ${app.screen.width / 2 - counter.getSize().width / 2} ${
-        counter.getSize().height + 10
+          counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2} ${
-        counter.getSize().height + 10
+          counter.getSize().height + 10
       }` +
       `L ${app.screen.width / 2 + counter.getSize().width / 2 + 20} 0` +
       `Z" stroke="red" stroke-width="3" fill="#222222"/>
         </svg>
     `
   );
+  function hideAllElements() {
+    app.stage.children.forEach(child => {
+      child.visible = false;
+    });
+  }
+  function death() {
+    const diedDiv = document.querySelector('.died');
+    diedDiv.style.display = 'flex';
+
+    hideAllElements();
+    document.querySelector("#mini").remove();
+
+    // After 5 seconds, reload the page
+    setTimeout(() => {
+      location.reload();
+    }, 5000);
+
+  }
 
   //Buttons
+
   const startBtn = new PIXI.Text({
     text: "Start",
     style: {
@@ -74,36 +92,50 @@ import * as TABLE from "./table.js";
   restartBtn.cursor = "pointer";
 
   //Events
-  startBtn.on("pointerdown", () => {
-    console.log(Date.now());
-    if (!isCounterStarted) {
-      counterVal = 20000;
-      isCounterStarted = true;
-    }
-  });
+  let startTimer = () => {
+    setTimeout(() => {
+      // Start the timer after 5 seconds of loading the page
+      if (!isCounterStarted) {
+        counterVal = 20000;
+        isCounterStarted = true;
+        console.log("Timer started after 5 seconds!");
+      }
+    }, 1000);
+  }
+
+// Restart button event
   restartBtn.on("pointerdown", () => {
     counterVal = 20000;
     counter.text = "20:000";
     isCounterStarted = false;
   });
 
+
+
   app.ticker.add((time) => {
     if (isCounterStarted) {
+      if (isNaN(counterVal)) {
+        console.error("counterVal is NaN! Resetting.");
+        counterVal = 20000; // Reset to initial value if NaN occurs
+      }
+
       counterVal -= app.ticker.elapsedMS;
+      counterVal = Math.max(counterVal, 0);
       counterVal = counterVal.toFixed(0);
+
       const seconds = Math.floor(counterVal / 1000);
       const milliseconds = counterVal % 1000;
-      if (counterVal > 0)
-        counter.text = `${String(seconds).padStart(2, "0")}:${String(
-          milliseconds
-        ).padStart(3, "0")}`;
-      else {
+      if (counterVal > 0) {
+        counter.text = `${String(seconds).padStart(2, "0")}:${String(milliseconds).padStart(3, "0")}`;
+      } else {
         counter.text = "00:000";
         isCounterStarted = false;
-        console.log(Date.now());
+        death();
+        console.log("Koniec czasu");
       }
     }
   });
+
 
 
 
@@ -123,6 +155,7 @@ import * as TABLE from "./table.js";
       if (element === start) {
         fadeOutElement(document.querySelector(".outer-container"));
         document.querySelector(".outer-container").style.display = 'none';
+        startTimer();
       }
     });
   });
@@ -154,15 +187,14 @@ import * as TABLE from "./table.js";
 
     const shadowHeight = 20;
 
-    // Rysowanie stołu
+    // Drawing Table
     graphics.rect(tableX, tableY, tableWidth, tableHeight);
     graphics.fill(0x333333);
 
-    // Cień stołu
+    // Table Shadow
     graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight);
     graphics.fill(0x6C6F72);
   }
-
   drawTable();
 
   window.addEventListener("resize", () => {
@@ -172,49 +204,48 @@ import * as TABLE from "./table.js";
 
   //textures
   const btnTextureArrow = await PIXI.Assets.load("btn-arrow.png");
+  const btnFace = await PIXI.Assets.load("btn1.png")
   const btnDontPress = await PIXI.Assets.load("btn3.png");
 
 
   const gridObjects = [
-    new TABLE.GridObj(0, 0, btnTextureArrow, () => alert('Kliknięto przycisk Arrow')),
-    new TABLE.GridObj(0, 0, btnDontPress, () => alert('Kliknięto przycisk Don\'t Press')),
+    new TABLE.GridObj(0, 0, btnFace, () => alert('ddd')),
+    new TABLE.GridObj(0, 0, btnDontPress, () => death()),
+    new TABLE.GridObj(0, 0, btnTextureArrow, () => startMiniGame()),
+
   ];
 
   const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, []);
 
-  const tableWidth = app.screen.width * 0.9; // Szerokość stołu
-  const tableHeight = app.screen.height * 0.3; // Wysokość stołu
-  const tableX = (app.screen.width - tableWidth) / 2; // Pozycja X stołu
-  const tableY = app.screen.height * 0.6; // Pozycja Y stołu
+  const tableWidth = app.screen.width * 0.9;
+  const tableHeight = app.screen.height * 0.3;
+  const tableX = (app.screen.width - tableWidth) / 2;
+  const tableY = app.screen.height * 0.6;
 
-// Obliczamy całkowitą szerokość przycisków z uwzględnieniem odstępów
+// Calculations for posistion of buttons
   const totalButtonWidth = gridObjects.reduce((sum, obj) => sum + obj.texture.width, 0);
-  const buttonSpacing = -300; // Odstęp między przyciskami
+  const buttonSpacing = -200; // Gap between buttons
   const totalSpacingWidth = buttonSpacing * (gridObjects.length - 1);
 
-// Obliczamy początkową pozycję X, aby przyciski były wyśrodkowane
+// Centering in X pos
   let startX = tableX + (tableWidth - totalButtonWidth - totalSpacingWidth) / 2;
 
-// Ustawiamy pozycje przycisków w jednej linii poziomej z tym samym Oy
-  const tableCenterY = tableY + tableHeight; // Wysokość stołu, środek
+// Centering in Y pos
+  const tableCenterY = tableY + tableHeight;
 
   gridObjects.forEach((obj, index) => {
-    const buttonX = startX + index * (obj.texture.width + buttonSpacing); // Pozycja X przycisku
+    obj.x = startX + index * (obj.texture.width + buttonSpacing); //X pos buttons
+    obj.y = tableCenterY - tableHeight; // Y pos buttons
 
-    obj.x = buttonX; // Pozycja X przycisku
-    obj.y = tableCenterY - obj.texture.height;
-
-    // Debug: Sprawdzamy pozycje
+    // Debbuging
     console.log(`Przycisk ${index + 1}: x = ${obj.x}, y = ${obj.y}`);
   });
 
-// Rysowanie siatki i dodawanie elementów do sceny
   grid.drawGrid();
   grid.cells.forEach((element) => {
     app.stage.addChild(element);
   });
 
-// Dodajemy przyciski do sceny
   gridObjects.forEach((obj) => {
     const buttonSprite = new PIXI.Sprite(obj.texture);
     buttonSprite.x = obj.x;
@@ -246,7 +277,7 @@ import * as TABLE from "./table.js";
   const typewriterCreators = document.getElementById("typewriter-text-creators");
 
   const typewriterContentPlay = `Welcome to 20 Seconds! Your mission is to manage the malfunctioning control panel. Instructions are etched into the walls—some are helpful, some are not. Time is your greatest enemy.`;
-  const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer Loiks – Lead programmer, Game Designer";
+  const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer // Loiks – Programmer, Game Designer // Skamor - Project manager, Lead programmer // Cuper2 -- ...";
 
   let typingIndex = 0;
   let typingIndexCreators = 0;
@@ -320,7 +351,7 @@ import * as TABLE from "./table.js";
     mini.style.display = "flex";
     console.log("ok")
     startButton.style.display = 'none';
-    temperatureButtons.style.display = 'block'; // Pokaż przyciski
+    temperatureButtons.style.display = 'block';
 
     targetTemperature = Math.floor(Math.random() * 70);
     temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
@@ -341,18 +372,12 @@ import * as TABLE from "./table.js";
   function updateTemperature() {
     temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
 
-    if (currentTemperature === targetTemperature) {
-      temperatureDisplay.textContent = `Brawo! Ustawiłeś właściwą temperaturę: ${targetTemperature}°C.`;
-      endGame();
-    } else if (currentTemperature < 0 || currentTemperature > 70) {
-      temperatureDisplay.textContent = `Temperatura jest poza zakresem! Ustaw ją pomiędzy 0 a 100°C.`;
-    }
+    if(currentTemperature === targetTemperature) endGame();
   }
 
   function endGame() {
-    temperatureButtons.style.display = 'none';
-    temperatureDisplay.style.display = 'none';
-
+    temperatureButtons.remove();
+    temperatureDisplay.remove();
   }
 
 })();
