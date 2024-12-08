@@ -12,6 +12,7 @@ import * as TABLE from "./table.js";
   });
   app.canvas.style.position = "absolute";
 
+
   const clockFont = await PIXI.Assets.load("E1234.ttf");
 
   //Counter
@@ -46,70 +47,45 @@ import * as TABLE from "./table.js";
         </svg>
     `
   );
+
   function hideAllElements() {
     app.stage.children.forEach(child => {
       child.visible = false;
     });
   }
+
   function death() {
     const diedDiv = document.querySelector('.died');
     diedDiv.style.display = 'flex';
 
     hideAllElements();
-    document.querySelector("#mini").remove();
-
+    document.querySelectorAll("#mini, svg").forEach(el => el.remove());
     // After 5 seconds, reload the page
     setTimeout(() => {
       location.reload();
-    }, 5000);
+    }, 4000);
 
   }
-
-  //Buttons
-
-  const startBtn = new PIXI.Text({
-    text: "Start",
-    style: {
-      fontSize: 24,
-    },
-  });
-  startBtn.anchor.set(0.5);
-  startBtn.y = 100;
-  startBtn.x = app.screen.width / 2;
-  startBtn.eventMode = "static";
-  startBtn.cursor = "pointer";
-
-  const restartBtn = new PIXI.Text({
-    text: "Restart",
-    style: {
-      fontSize: 24,
-    },
-  });
-  restartBtn.anchor.set(0.5);
-  restartBtn.y = 150;
-  restartBtn.x = app.screen.width / 2;
-  restartBtn.eventMode = "static";
-  restartBtn.cursor = "pointer";
 
   //Events
   let startTimer = () => {
     setTimeout(() => {
       // Start the timer after 5 seconds of loading the page
       if (!isCounterStarted) {
-        counterVal = 20000;
+        counterVal = 2000000;
         isCounterStarted = true;
         console.log("Timer started after 5 seconds!");
       }
     }, 1000);
   }
 
-// Restart button event
-  restartBtn.on("pointerdown", () => {
-    counterVal = 20000;
-    counter.text = "20:000";
-    isCounterStarted = false;
-  });
-
+  // // Restart button event
+  //   restartBtn.on("pointerdown", () => {
+  //     counterVal = 20000;
+  //     counter.text = "20:000";
+  //     isCounterStarted = false;
+  //   });
+  //
 
 
   app.ticker.add((time) => {
@@ -138,7 +114,10 @@ import * as TABLE from "./table.js";
 
 
 
-
+  // Audio section
+  const laughtAudio = new Audio('laughmp3.mp3');
+  const gasLeakAudio = new Audio('gasLeak.mp3');
+  laughtAudio.load();
   //Menu
   const menuItems = document.querySelectorAll(".menu-item");
 
@@ -171,9 +150,12 @@ import * as TABLE from "./table.js";
     });
   });
 
-  const { Graphics } = PIXI;
+  const {
+    Graphics
+  } = PIXI;
   const graphics = new Graphics();
   app.stage.addChild(graphics);
+
 
   function drawTable() {
     const tableHeight = 350;
@@ -191,6 +173,10 @@ import * as TABLE from "./table.js";
     graphics.rect(tableX, tableY, tableWidth, tableHeight);
     graphics.fill(0x333333);
 
+
+
+
+
     // Table Shadow
     graphics.rect(tableX + 10, tableY + tableHeight, tableWidth - 20, shadowHeight);
     graphics.fill(0x6C6F72);
@@ -204,33 +190,31 @@ import * as TABLE from "./table.js";
 
   //textures
   const btnTextureArrow = await PIXI.Assets.load("btn-arrow.png");
-  const btnFace = await PIXI.Assets.load("btn1.png")
+  const btnFace = await PIXI.Assets.load("termperature.png")
   const btnDontPress = await PIXI.Assets.load("btn3.png");
 
 
   const gridObjects = [
-    new TABLE.GridObj(0, 0, btnFace, () => alert('ddd')),
+    new TABLE.GridObj(0, 0, btnFace, () => startMiniGame()),
     new TABLE.GridObj(0, 0, btnDontPress, () => death()),
-    new TABLE.GridObj(0, 0, btnTextureArrow, () => startMiniGame()),
-
+    new TABLE.GridObj(0, 0, btnTextureArrow, () => startMinigame2()),
   ];
 
   const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, []);
-
   const tableWidth = app.screen.width * 0.9;
   const tableHeight = app.screen.height * 0.3;
   const tableX = (app.screen.width - tableWidth) / 2;
   const tableY = app.screen.height * 0.6;
 
-// Calculations for posistion of buttons
+  // Calculations for posistion of buttons
   const totalButtonWidth = gridObjects.reduce((sum, obj) => sum + obj.texture.width, 0);
   const buttonSpacing = -200; // Gap between buttons
   const totalSpacingWidth = buttonSpacing * (gridObjects.length - 1);
 
-// Centering in X pos
+  // Centering in X pos
   let startX = tableX + (tableWidth - totalButtonWidth - totalSpacingWidth) / 2;
 
-// Centering in Y pos
+  // Centering in Y pos
   const tableCenterY = tableY + tableHeight;
 
   gridObjects.forEach((obj, index) => {
@@ -238,7 +222,6 @@ import * as TABLE from "./table.js";
     obj.y = tableCenterY - tableHeight; // Y pos buttons
 
     // Debbuging
-    console.log(`Przycisk ${index + 1}: x = ${obj.x}, y = ${obj.y}`);
   });
 
   grid.drawGrid();
@@ -258,8 +241,6 @@ import * as TABLE from "./table.js";
 
   app.stage.addChild(counterBorder);
   app.stage.addChild(counter);
-  app.stage.addChild(startBtn);
-  app.stage.addChild(restartBtn);
 
 
   document.querySelector(".game-container").appendChild(app.canvas);
@@ -335,49 +316,97 @@ import * as TABLE from "./table.js";
     }
   });
 
-  const smt = document.getElementById("mini");
-  smt.style.display = "none";
-  const startButton = document.getElementById("start-game");
+  const minigameBody = document.getElementById("mini");
+  minigameBody.style.display = "none";
+  const startButton = document.getElementById("start-game").style.display = "none";
   const temperatureDisplay = document.getElementById("temperature-display");
   const temperatureButtons = document.getElementById("temperature-buttons");
   const coolButton = document.getElementById("cool-button");
   const heatButton = document.getElementById("heat-button");
 
-  let currentTemperature = 50;
+  let currentTemperature = Math.floor(Math.random() * (35 - 20) + 20); // generates number between 20 and 35 (both included)
   let targetTemperature;
 
-  //
-  function startMiniGame ()  {
+
+
+  function startMiniGame() {
+    
     mini.style.display = "flex";
-    console.log("ok")
-    startButton.style.display = 'none';
-    temperatureButtons.style.display = 'block';
+    console.log("ok");
+    temperatureButtons.style.display = 'flex';
+    targetTemperature = Math.floor(Math.random() * (35 - 10) + 10); // generates number between 10 and 35 (both included)
+    temperatureDisplay.textContent = `Set the temperature to: ${targetTemperature}°C. Current temperature: ${currentTemperature}°C`;
 
-    targetTemperature = Math.floor(Math.random() * 70);
-    temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
-  };
+    // Start swapping buttons every 2 seconds
+    setInterval(() => {
+      // Only swap buttons if the user is close to the target temperature
+      if (Math.abs(targetTemperature - currentTemperature) <= 5) {
+        swapButtons();
+        laughtAudio.play();
+        laughtCount++;
+      }
+    }, 2000);
 
-  //deleting temperature
+  // Swaps the positions of the buttons
+  function swapButtons() {
+    const buttons = Array.from(temperatureButtons.children);
+
+    // Shuffle the positions
+    for (let i = buttons.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
+    }
+
+    // Reattach the buttons in new order
+    buttons.forEach(button => {
+      temperatureButtons.appendChild(button);
+    });
+  }
+
+
+
+  // Deleting temperature
   coolButton.addEventListener('click', () => {
     currentTemperature--;
     updateTemperature();
   });
 
-  //adding temperature
+  // Adding temperature
   heatButton.addEventListener('click', () => {
     currentTemperature++;
     updateTemperature();
   });
-  //checks and updates temperature
-  function updateTemperature() {
-    temperatureDisplay.textContent = `Ustaw temperaturę na: ${targetTemperature}°C. Aktulna temperatura: ${currentTemperature}°C`;
 
-    if(currentTemperature === targetTemperature) endGame();
+  // Checks and updates temperature
+  function updateTemperature() {
+    temperatureDisplay.textContent = `Set the temperature to: ${targetTemperature}°C. Current temperature: ${currentTemperature}°C`;
+    if (currentTemperature === targetTemperature) endGame();
   }
 
   function endGame() {
     temperatureButtons.remove();
     temperatureDisplay.remove();
+  }}
+  
+  function startMiniGame2(){
+    let gridWidth = 3 * 150;
+    let gridHeight = 3 * 120;
+
+    let startX1 = (app.screen.width - gridWidth) / 2;
+    let startY = (app.screen.height - gridHeight) / 2;
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let x = startX1 + (i * 150);  // Horizontal position
+        let y = startY + (j * 120);  // Vertical position
+        graphics.rect(x, y, 50, 50);  // Draw the rectangle
+        graphics.fill(0xFF0000);
+      }
+    }
+
   }
+
+
+
 
 })();

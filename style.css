@@ -190,11 +190,7 @@ body {
 
 /*styles for minigame #1*/
 
-#mini {
-  display: none;
-  position: relative;
-  text-align: center;
-}
+
 button {
   padding: 10px 20px;
   font-size: 16px;
@@ -230,13 +226,41 @@ body {
   margin: 0;
 }
 
-/*body {*/
-/*  background: black;*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*  align-items: center;*/
-/*  overflow: hidden;*/
-/*}*/
+
+
+#mini {
+  display: flex;
+  flex-direction: column; /* Ustaw elementy w pionie */
+  align-items: center;    /* Wyśrodkuj poziomo */
+  height: auto;
+  padding-top: 10%;
+  position: relative;
+  justify-content: flex-start; /* Jeśli chcesz, żeby zaczynało się od góry */
+  text-align: center;
+}
+
+#temperature-display {
+  margin-bottom: 20px; /* Dodaj odstęp poniżej wyświetlacza */
+  font-size: 24px;
+  text-align: center;
+}
+
+#temperature-buttons {
+  display: flex;
+  gap: 10px; /* Równe odstępy między przyciskami */
+}
+
+#temperature-buttons button {
+  margin: 0; /* Usuń marginesy */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
 
 .died {
   width: 100%;
@@ -281,3 +305,4 @@ h1 {
     filter: grayscale(100%);
   }
 }
+
