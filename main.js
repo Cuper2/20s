@@ -55,31 +55,56 @@ import * as TABLE from "./table.js";
   }
 
   function death() {
-    const diedDiv = document.querySelector('.died');
-    diedDiv.style.display = 'flex';
-    deathAudio.play();
     hideAllElements();
     document.querySelectorAll("#mini, svg").forEach(el => el.remove());
-    // After 4 seconds, reload the page
+    document.body.classList.add('shake');
+    const explosion = document.createElement('div');
+    explosion.classList.add('explosion');
+    document.body.appendChild(explosion);
+
+    for (let i = 0; i < 30; i++) {
+      const fragment = document.createElement('div');
+      fragment.classList.add('fragment');
+      
+      //explosion position (random)
+      const angle = Math.random() * 360;
+      const distance = Math.random() * 150; 
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+
+      fragment.style.transform = `translate(${x}px, ${y}px)`;
+
+      document.body.appendChild(fragment);
+    }
+    // Deleting elements
+    setTimeout(() => {
+      explosion.remove();
+      document.body.classList.remove('shake');
+
+      const diedDiv = document.querySelector('.died');
+      diedDiv.style.display = 'flex';
+      deathAudio.play();
+    }, 1000); 
+
     setTimeout(() => {
       location.reload();
-    }, 4000);
-
+    }, 5000);
   }
+
 
   //Events
   let startTimer = () => {
     setTimeout(() => {
       // Start the timer after 5 seconds of loading the page
       if (!isCounterStarted) {
-        counterVal = 2000000;
+        counterVal = 20000;
         isCounterStarted = true;
         console.log("Timer started after 5 seconds!");
       }
     }, 1000);
   }
 
-  app.ticker.add((time) => {
+  app.ticker.add(() => {
     if (isCounterStarted) {
       if (isNaN(counterVal)) {
         console.error("counterVal is NaN! Resetting.");
@@ -107,7 +132,7 @@ import * as TABLE from "./table.js";
   const correctPinAudio = new Audio('correctSound.mp3')
   const deathAudio = new Audio('youDied.mp3')
   const laughtAudio = new Audio('laughmp3.mp3');
-  const gasLeakAudio = new Audio('gasLeak.mp3');
+  const explosionAudio = new Audio('explosion.mp3');
 
   //Menu
   const menuItems = document.querySelectorAll(".menu-item");
@@ -180,11 +205,13 @@ import * as TABLE from "./table.js";
   //textures
   const btnTextureArrow = await PIXI.Assets.load("btn-arrow.png");
   const btnFace = await PIXI.Assets.load("termperature.png")
+  const pinPadTexture = await PIXI.Assets.load("pinpad.png");
   const btnDontPress = await PIXI.Assets.load("btn3.png");
 
 
   const gridObjects = [
     new TABLE.GridObj(0, 0, btnFace, () => startMiniGame()),
+    new TABLE.GridObj(0, 0, pinPadTexture, () => death()),
     new TABLE.GridObj(0, 0, btnDontPress, () => death()),
     new TABLE.GridObj(0, 0, btnTextureArrow, () => startMiniGame2()),
   ];
@@ -306,19 +333,20 @@ import * as TABLE from "./table.js";
   });
 
   const minigameBody = document.getElementById("mini");
+  const miniContainer = document.getElementById("con");
   minigameBody.style.display = "none";
   const startButton = document.getElementById("start-game").style.display = "none";
   const temperatureDisplay = document.getElementById("temperature-display");
   const temperatureButtons = document.getElementById("temperature-buttons");
   const coolButton = document.getElementById("cool-button");
   const heatButton = document.getElementById("heat-button");
-
   let currentTemperature = Math.floor(Math.random() * (35 - 20) + 20); // generates number between 20 and 35 (both included)
   let targetTemperature;
-
-
-
+  let gameWin = 0; // player wins if gameWin  = 2
+  
+  
   function startMiniGame() {
+    miniContainer.style.display = "flex";
     mini.style.display = "flex";
     console.log("ok");
     temperatureButtons.style.display = 'flex';
@@ -326,12 +354,11 @@ import * as TABLE from "./table.js";
     temperatureDisplay.textContent = `Set the temperature to: ${targetTemperature}°C. Current temperature: ${currentTemperature}°C`;
 
     // Start swapping buttons every 2 seconds
-    setInterval(() => {
+    let swapInterval = setInterval(() => {
       // Only swap buttons if the user is close to the target temperature
       if (Math.abs(targetTemperature - currentTemperature) <= 5) {
         swapButtons();
         laughtAudio.play();
-        laughtCount++;
       }
     }, 2000);
 
@@ -367,146 +394,136 @@ import * as TABLE from "./table.js";
   // Checks and updates temperature
   function updateTemperature() {
     temperatureDisplay.textContent = `Set the temperature to: ${targetTemperature}°C. Current temperature: ${currentTemperature}°C`;
-    if (currentTemperature === targetTemperature) endGame();
+    if (currentTemperature === targetTemperature) {
+      endGame();
+      gameWin++;
+    }
   }
 
-  function endGame() {
-    temperatureButtons.remove();
-    temperatureDisplay.remove();
-  }}
+    function endGame() {
+      if (temperatureButtons) temperatureButtons.remove();
+      if (temperatureDisplay) temperatureDisplay.remove();
+      if (minigameBody) minigameBody.remove();
+      if (miniContainer) miniContainer.remove();
+      clearInterval(swapInterval);
+    }
+  }
   function startMiniGame2() {
-    let gridWidth = 3 * 50 + 2 * 90; // Zmienione wymiary gridu
-    let gridHeight = 3 * 50 + 2 * 90;
-    let startX1 = (app.screen.width - gridWidth) / 2 + 50;
-    let startY = (app.screen.height - gridHeight) / 2 + 50;
+    let buttonWidth = 100;
+    let buttonHeight = 100;
+    let gridWidth = 3 * buttonWidth + 2 * 20;
+    let gridHeight = 3 * buttonHeight + 2 * 20;
 
-    let counter = 1;
+    let startX1 = (app.screen.width - gridWidth) / 2;
+    let startY = (app.screen.height - gridHeight) / 2;
+
     let pin = "";
     let correctPin = generatePin();
+    let buttons = []; // Tablica przechowująca przyciski
 
     function generatePin() {
-      return Math.floor(100 + Math.random() * 900); // Generuje 3-cyfrowy PIN
+      let digits = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // Bez zera
+      let pin = "";
+      while (pin.length < 3) {
+        let index = Math.floor(Math.random() * digits.length);
+        pin += digits[index];
+      }
+      return parseInt(pin);
     }
-
-
-
     function checkPin() {
       if (pin === correctPin.toString()) {
-        correctPinAudio.play();
-        console.log("PIN poprawny!");
+        console.log("PIN correct");
+        app.stage.removeChild(pinpadBackground);
+        app.stage.removeChild(pinText);
+        buttons.forEach(button => app.stage.removeChild(button));
+        correctPinAudio.play()
       } else {
-        pin = ""; // Resetuj PIN
+        explosionAudio.play();
+        death();
       }
     }
 
-    // Generowanie PIN-u i logowanie go w konsoli
-    console.log("Wygenerowany PIN: " + correctPin);
-
-    // Tworzenie tekstu, który będzie wyświetlał wpisany PIN nad pinpadem
     let pinText = new PIXI.Text("PIN to enter : " + correctPin, {
       fontFamily: 'Arial',
-      fontSize: 24,
+      fontSize: 30,
       fill: 0xFFFFFF,
       align: 'center'
     });
     pinText.x = app.screen.width / 2 - pinText.width / 2;
-    pinText.y = startY - 40; // Przesuwamy tekst nad pinpad
+    pinText.y = startY - 60;
     app.stage.addChild(pinText);
 
-    // Tworzenie pinpada
-    for (let j = 0; j < 3; j++) { // Pętla dla wierszy
-      for (let i = 0; i < 3; i++) { // Pętla dla kolumn
-        let x = startX1 + (i * 80);  // Zmienione odstępy
-        let y = startY + (j * 80);  // Zmienione odstępy
+    
+    let pinpadBackground = new PIXI.Graphics();
+    pinpadBackground.roundRect(startX1 - 10, startY - 10, gridWidth + 20, gridHeight + 20, 15); // Rysowanie tła z obwódką
+    pinpadBackground.fill(0x000000);
+    pinpadBackground.stroke({ width: 2, color: 0xFFFFFF });
 
-        // Rysowanie przycisku z zaokrąglonymi rogami
-        let button = new PIXI.Graphics();
-        button.roundRect(x, y, 50, 50, 10); // Zaokrąglone rogi
-        button.fill(0xFF6347); // Kolor czerwony
+    app.stage.addChild(pinpadBackground);
 
-        // Numer przycisku
-        let number = counter.toString();
-
-        // Tworzenie tekstu
-        let label = new PIXI.Text(number, {
-          fontFamily: 'Arial',
-          fontSize: 24,  // Zwiększenie czcionki
-          fill: 0xFFFFFF,
-          align: 'center'
-        });
-
-        // Ustawienie pozycji tekstu w środku przycisku
-        label.x = x + 25 - label.width / 2;
-        label.y = y + 25 - label.height / 2;
-
-        // Dodanie tekstu do przycisku
-        button.addChild(label);
-
-        // Dodanie przycisku do sceny
-        app.stage.addChild(button);
-
-        // Obsługa kliknięcia
-        button.interactive = true;
-        button.buttonMode = true;
-        button.on('pointerdown', () => {
-          button.alpha = 0.5;  // Przyciemnienie przycisku przy kliknięciu
-          if (pin.length < 3) {
-            pin += number; // Dodanie klikniętej cyfry do PIN-u
-            // Sprawdzamy PIN po trzech cyfrach
-            if (pin.length === 3) {
-              checkPin(); // Sprawdzanie PIN-u
-            }
-          }
-        });
-
-        button.on('pointerup', () => {
-          button.alpha = 1;  // Przywrócenie normalnego koloru po zwolnieniu przycisku
-        });
-
-        counter++; // Zwiększanie licznika dla kolejnych etykiet
-      }
-    }
-
-    // Dodanie zera na środku pod pinpadem
-    let zeroX = startX1 + 80; // Środkowa kolumna
-    let zeroY = startY + (3 * 80); // Pozycja poniżej siatki
-
-    let zeroButton = new PIXI.Graphics();
-    zeroButton.fill(0xFF6347); // Kolor czerwony
-    zeroButton.roundRect(zeroX, zeroY, 50, 50, 10); // Zaokrąglone rogi
-
-    let zeroLabel = new PIXI.Text("0", {
-      fontFamily: 'Arial',
-      fontSize: 24,  // Zwiększenie czcionki
-      fill: 0xFFFFFF,
-      align: 'center'
-    });
-
-    // Ustawienie pozycji tekstu w środku przycisku dla zera
-    zeroLabel.x = zeroX + 25 - zeroLabel.width / 2;
-    zeroLabel.y = zeroY + 25 - zeroLabel.height / 2;
-
-    zeroButton.addChild(zeroLabel);
-    app.stage.addChild(zeroButton);
-
-    zeroButton.interactive = true;
-    zeroButton.buttonMode = true;
-    zeroButton.on('pointerdown', () => {
-      zeroButton.alpha = 0.5;  // Przyciemnienie przycisku przy kliknięciu
-      if (pin.length < 3) {
-        pin += "0"; // Dodanie zera do PIN-u
-        // Sprawdzamy PIN po trzech cyfrach
-        if (pin.length === 3) {
-          checkPin(); // Sprawdzanie PIN-u
+    // Funkcja tasująca pozycje
+    function shufflePositions() {
+      let positions = [];
+      for (let j = 0; j < 3; j++) {
+        for (let i = 0; i < 3; i++) {
+          let x = startX1 + (i * buttonWidth) + (i * 20);
+          let y = startY + (j * buttonHeight) + (j * 20);
+          positions.push({ x, y });
         }
       }
-    });
+      return positions.sort(() => Math.random() - 0.5);
+    }
 
-    zeroButton.on('pointerup', () => {
-      zeroButton.alpha = 1;  // Przywrócenie normalnego koloru po zwolnieniu przycisku
-    });
+    let positions = shufflePositions(); 
+
+    // Creating PINPAD 3x3 
+    for (let number = 1; number <= 9; number++) {
+      let position = positions.shift(); 
+
+      let button = new PIXI.Container();
+
+      let buttonGraphics = new PIXI.Graphics();
+      buttonGraphics.roundRect(0, 0, buttonWidth, buttonHeight, 10);
+      buttonGraphics.fill(0xFF6347);
+
+      let label = new PIXI.Text(number.toString(), {
+        fontFamily: 'Arial',
+        fontSize: 24,
+        fill: 0xFFFFFF,
+        align: 'center'
+      });
+
+      label.x = buttonWidth / 2 - label.width / 2;
+      label.y = buttonHeight / 2 - label.height / 2;
+
+      button.addChild(buttonGraphics);
+      button.addChild(label);
+
+      button.x = position.x;
+      button.y = position.y;
+
+      // Events for clicking buttons
+      button.interactive = true;
+      button.buttonMode = true;
+      button.on('pointerdown', () => {
+        button.alpha = 0.5;
+        if (pin.length < 3) {
+          pin += number.toString();
+          if (pin.length === 3) {
+            checkPin(); 
+          }
+        }
+      });
+
+      button.on('pointerup', () => {
+        button.alpha = 1;
+      });
+
+      buttons.push(button);
+      app.stage.addChild(button);
+    }
+
   }
-
-
+    if (gameWin === 2) console.log("wygrałeś");
 
 })();

@@ -200,22 +200,22 @@ button {
   border: none;
   border-radius: 5px;
 }
-#temperature-display {
-  margin-top: 20px;
-  font-size: 24px;
-}
-#temperature-buttons {
-  margin-top: 20px;
-}
+
+
 #temperature-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
   margin: 0 10px;
 }
 #mini {
   display: none;
   justify-content: center;
   align-items: flex-start;
-  height: 20vh;
-  padding-top: 10%;
   text-align: center;
 }
 
@@ -233,33 +233,37 @@ body {
   flex-direction: column; /* Ustaw elementy w pionie */
   align-items: center;    /* Wyśrodkuj poziomo */
   height: auto;
-  padding-top: 10%;
   position: relative;
   justify-content: flex-start; /* Jeśli chcesz, żeby zaczynało się od góry */
   text-align: center;
 }
 
 #temperature-display {
-  margin-bottom: 20px; /* Dodaj odstęp poniżej wyświetlacza */
-  font-size: 24px;
+  display: inline-block;
   text-align: center;
+  margin-bottom: 10px;
 }
+
 
 #temperature-buttons {
   display: flex;
+  justify-content: center;
   gap: 10px; /* Równe odstępy między przyciskami */
+  margin-top: 20px;
 }
 
-#temperature-buttons button {
-  margin: 0; /* Usuń marginesy */
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
+#con {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
+  background: linear-gradient(to bottom, #2c2c2c, #9e0000);
+  width: 100%;
+  margin-top: 70px;
+  justify-content: center;
+  height: 600px;
 }
+
 
 
 .died {
@@ -306,3 +310,66 @@ h1 {
   }
 }
 
+@keyframes explosion {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(3);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(5);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-10px, 0); }
+  50% { transform: translate(10px, 0); }
+  75% { transform: translate(-10px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+.explosion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background-color: red;
+  clip-path: polygon(50% 0%, 60% 10%, 70% 0%, 80% 10%, 90% 0%, 100% 20%, 90% 40%, 100% 60%, 90% 80%, 80% 90%, 70% 100%, 60% 90%, 50% 100%, 40% 90%, 30% 100%, 20% 90%, 10% 80%, 0% 60%, 10% 40%, 0% 20%, 10% 0%);
+  animation: explosion 1s ease-out forwards;
+  z-index: 9999;
+}
+
+.shake {
+  animation: shake 0.5s ease-out forwards;
+  z-index: 9998;
+}
+
+.fragment {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  border-radius: 50%;
+  animation: fragmentMove 1s forwards;
+}
+
+@keyframes fragmentMove {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
