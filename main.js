@@ -57,10 +57,10 @@ import * as TABLE from "./table.js";
   function death() {
     const diedDiv = document.querySelector('.died');
     diedDiv.style.display = 'flex';
-
+    deathAudio.play();
     hideAllElements();
     document.querySelectorAll("#mini, svg").forEach(el => el.remove());
-    // After 5 seconds, reload the page
+    // After 4 seconds, reload the page
     setTimeout(() => {
       location.reload();
     }, 4000);
@@ -78,15 +78,6 @@ import * as TABLE from "./table.js";
       }
     }, 1000);
   }
-
-  // // Restart button event
-  //   restartBtn.on("pointerdown", () => {
-  //     counterVal = 20000;
-  //     counter.text = "20:000";
-  //     isCounterStarted = false;
-  //   });
-  //
-
 
   app.ticker.add((time) => {
     if (isCounterStarted) {
@@ -112,12 +103,12 @@ import * as TABLE from "./table.js";
     }
   });
 
-
-
   // Audio section
+  const correctPinAudio = new Audio('correctSound.mp3')
+  const deathAudio = new Audio('youDied.mp3')
   const laughtAudio = new Audio('laughmp3.mp3');
   const gasLeakAudio = new Audio('gasLeak.mp3');
-  laughtAudio.load();
+
   //Menu
   const menuItems = document.querySelectorAll(".menu-item");
 
@@ -150,9 +141,7 @@ import * as TABLE from "./table.js";
     });
   });
 
-  const {
-    Graphics
-  } = PIXI;
+  const {Graphics} = PIXI;
   const graphics = new Graphics();
   app.stage.addChild(graphics);
 
@@ -197,7 +186,7 @@ import * as TABLE from "./table.js";
   const gridObjects = [
     new TABLE.GridObj(0, 0, btnFace, () => startMiniGame()),
     new TABLE.GridObj(0, 0, btnDontPress, () => death()),
-    new TABLE.GridObj(0, 0, btnTextureArrow, () => startMinigame2()),
+    new TABLE.GridObj(0, 0, btnTextureArrow, () => startMiniGame2()),
   ];
 
   const grid = new TABLE.Grid(64, 0, 300, app.screen.width, 200, gridObjects, []);
@@ -330,7 +319,6 @@ import * as TABLE from "./table.js";
 
 
   function startMiniGame() {
-    
     mini.style.display = "flex";
     console.log("ok");
     temperatureButtons.style.display = 'flex';
@@ -364,7 +352,6 @@ import * as TABLE from "./table.js";
   }
 
 
-
   // Deleting temperature
   coolButton.addEventListener('click', () => {
     currentTemperature--;
@@ -387,25 +374,138 @@ import * as TABLE from "./table.js";
     temperatureButtons.remove();
     temperatureDisplay.remove();
   }}
-  
-  function startMiniGame2(){
-    let gridWidth = 3 * 150;
-    let gridHeight = 3 * 120;
+  function startMiniGame2() {
+    let gridWidth = 3 * 50 + 2 * 90; // Zmienione wymiary gridu
+    let gridHeight = 3 * 50 + 2 * 90;
+    let startX1 = (app.screen.width - gridWidth) / 2 + 50;
+    let startY = (app.screen.height - gridHeight) / 2 + 50;
 
-    let startX1 = (app.screen.width - gridWidth) / 2;
-    let startY = (app.screen.height - gridHeight) / 2;
+    let counter = 1;
+    let pin = "";
+    let correctPin = generatePin();
 
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        let x = startX1 + (i * 150);  // Horizontal position
-        let y = startY + (j * 120);  // Vertical position
-        graphics.rect(x, y, 50, 50);  // Draw the rectangle
-        graphics.fill(0xFF0000);
+    function generatePin() {
+      return Math.floor(100 + Math.random() * 900); // Generuje 3-cyfrowy PIN
+    }
+
+
+
+    function checkPin() {
+      if (pin === correctPin.toString()) {
+        correctPinAudio.play();
+        console.log("PIN poprawny!");
+      } else {
+        pin = ""; // Resetuj PIN
       }
     }
 
-  }
+    // Generowanie PIN-u i logowanie go w konsoli
+    console.log("Wygenerowany PIN: " + correctPin);
 
+    // Tworzenie tekstu, który będzie wyświetlał wpisany PIN nad pinpadem
+    let pinText = new PIXI.Text("PIN to enter : " + correctPin, {
+      fontFamily: 'Arial',
+      fontSize: 24,
+      fill: 0xFFFFFF,
+      align: 'center'
+    });
+    pinText.x = app.screen.width / 2 - pinText.width / 2;
+    pinText.y = startY - 40; // Przesuwamy tekst nad pinpad
+    app.stage.addChild(pinText);
+
+    // Tworzenie pinpada
+    for (let j = 0; j < 3; j++) { // Pętla dla wierszy
+      for (let i = 0; i < 3; i++) { // Pętla dla kolumn
+        let x = startX1 + (i * 80);  // Zmienione odstępy
+        let y = startY + (j * 80);  // Zmienione odstępy
+
+        // Rysowanie przycisku z zaokrąglonymi rogami
+        let button = new PIXI.Graphics();
+        button.roundRect(x, y, 50, 50, 10); // Zaokrąglone rogi
+        button.fill(0xFF6347); // Kolor czerwony
+
+        // Numer przycisku
+        let number = counter.toString();
+
+        // Tworzenie tekstu
+        let label = new PIXI.Text(number, {
+          fontFamily: 'Arial',
+          fontSize: 24,  // Zwiększenie czcionki
+          fill: 0xFFFFFF,
+          align: 'center'
+        });
+
+        // Ustawienie pozycji tekstu w środku przycisku
+        label.x = x + 25 - label.width / 2;
+        label.y = y + 25 - label.height / 2;
+
+        // Dodanie tekstu do przycisku
+        button.addChild(label);
+
+        // Dodanie przycisku do sceny
+        app.stage.addChild(button);
+
+        // Obsługa kliknięcia
+        button.interactive = true;
+        button.buttonMode = true;
+        button.on('pointerdown', () => {
+          button.alpha = 0.5;  // Przyciemnienie przycisku przy kliknięciu
+          if (pin.length < 3) {
+            pin += number; // Dodanie klikniętej cyfry do PIN-u
+            // Sprawdzamy PIN po trzech cyfrach
+            if (pin.length === 3) {
+              checkPin(); // Sprawdzanie PIN-u
+            }
+          }
+        });
+
+        button.on('pointerup', () => {
+          button.alpha = 1;  // Przywrócenie normalnego koloru po zwolnieniu przycisku
+        });
+
+        counter++; // Zwiększanie licznika dla kolejnych etykiet
+      }
+    }
+
+    // Dodanie zera na środku pod pinpadem
+    let zeroX = startX1 + 80; // Środkowa kolumna
+    let zeroY = startY + (3 * 80); // Pozycja poniżej siatki
+
+    let zeroButton = new PIXI.Graphics();
+    zeroButton.fill(0xFF6347); // Kolor czerwony
+    zeroButton.roundRect(zeroX, zeroY, 50, 50, 10); // Zaokrąglone rogi
+
+    let zeroLabel = new PIXI.Text("0", {
+      fontFamily: 'Arial',
+      fontSize: 24,  // Zwiększenie czcionki
+      fill: 0xFFFFFF,
+      align: 'center'
+    });
+
+    // Ustawienie pozycji tekstu w środku przycisku dla zera
+    zeroLabel.x = zeroX + 25 - zeroLabel.width / 2;
+    zeroLabel.y = zeroY + 25 - zeroLabel.height / 2;
+
+    zeroButton.addChild(zeroLabel);
+    app.stage.addChild(zeroButton);
+
+    zeroButton.interactive = true;
+    zeroButton.buttonMode = true;
+    zeroButton.on('pointerdown', () => {
+      zeroButton.alpha = 0.5;  // Przyciemnienie przycisku przy kliknięciu
+      if (pin.length < 3) {
+        pin += "0"; // Dodanie zera do PIN-u
+        // Sprawdzamy PIN po trzech cyfrach
+        if (pin.length === 3) {
+          checkPin(); // Sprawdzanie PIN-u
+        }
+      }
+    });
+
+    zeroButton.on('pointerup', () => {
+      zeroButton.alpha = 1;  // Przywrócenie normalnego koloru po zwolnieniu przycisku
+    });
+  }
 
 
 
