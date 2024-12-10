@@ -1,4 +1,3 @@
-/* Resetowanie marginesów i pełna wysokość dla body */
 body,
 .outer-container {
   margin: 0;
@@ -133,7 +132,6 @@ body {
   transition: background 1s ease-in-out;
 }
 
-/* Modal stylizacja */
 .modal {
   position: fixed;
   top: 0;
@@ -230,11 +228,11 @@ body {
 
 #mini {
   display: flex;
-  flex-direction: column; /* Ustaw elementy w pionie */
-  align-items: center;    /* Wyśrodkuj poziomo */
+  flex-direction: column;
+  align-items: center;
   height: auto;
   position: relative;
-  justify-content: flex-start; /* Jeśli chcesz, żeby zaczynało się od góry */
+  justify-content: flex-start;
   text-align: center;
 }
 
@@ -248,7 +246,7 @@ body {
 #temperature-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px; /* Równe odstępy między przyciskami */
+  gap: 10px;
   margin-top: 20px;
 }
 
@@ -269,7 +267,7 @@ body {
 .died {
   width: 100%;
   height: 100%;
-  display: none; /* Initially hidden */
+  display: none;
   justify-content: center;
   align-items: center;
   animation-name: youdied;
@@ -372,4 +370,110 @@ h1 {
   100% {
     opacity: 0;
   }
+}
+/* Victory screen */
+#victory {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #000000;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.victory-screen {
+  text-align: center;
+  color: #ff0000;
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 2s ease-out;
+}
+#victory,.title,.subtitle,.title{
+  display: none;
+}
+.title {
+  display: none;
+  font-size: 50px;
+  font-weight: bold;
+  color: #ff0000;
+  text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+  animation: flicker 1.5s infinite alternate;
+}
+
+.subtitle {
+  font-size: 30px;
+  color: #ff5555;
+  text-shadow: 0 0 5px #ff5555, 0 0 10px #ff5555;
+  animation: fadeInOut 2s infinite alternate;
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 1) 70%);
+  z-index: 1;
+  animation: backgroundFlicker 3s infinite alternate;
+  opacity: 0;
+  transition: opacity 2s ease-out;
+}
+
+@keyframes flicker {
+  0% {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+  }
+  50% {
+    text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000;
+  }
+  100% {
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes backgroundFlicker {
+  0% {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 1) 70%);
+  }
+  50% {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 20%, rgba(0, 0, 0, 1) 80%);
+  }
+  100% {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.9) 40%, rgba(0, 0, 0, 1) 60%);
+  }
+}
+
+
+.btn {
+  display:none;
+  position: absolute;
+  bottom: 20px;
+  padding: 15px 30px;
+  font-size: 20px;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.btn:hover {
+  background-color: #555;
 }

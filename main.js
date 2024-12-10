@@ -296,7 +296,7 @@ import * as TABLE from "./table.js";
     const typewriterCreators = document.getElementById("typewriter-text-creators");
 
     const typewriterContentPlay = `Welcome to 20 Seconds! Your mission is to manage the malfunctioning control panel. Time is your greatest enemy. The control panel has buttons that trigger mini-games. Solve them before the countdown runs out, or the system will fail. Each game tests your time reaction—make a mistake, and the malfunction worsens. Can you fix the panel in time?`;
-    const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer // Loiks – Programmer, Game Designer // Skamor - Project manager, Lead programmer // Cuper2 -- ...";
+    const typewriterContentCreators = "Cyberentrails - Concept Artist, Lead Artist, Story Writer // Loiks – Programmer, Game Designer // Skamor - Project manager, Lead programmer // Cuper2 -- Programmer, Game Designer";
 
     let typingIndex = 0;
     let typingIndexCreators = 0;
@@ -367,8 +367,8 @@ import * as TABLE from "./table.js";
     let gameWin = 0; // player wins if gameWin  = 2
 
     const checkWin = () => {
-        if (gameWin === 1) console.log("Win")
-        victoryScreen();
+        if (gameWin === 2) victoryScreen();
+        
     }
 
     function startMiniGame() {
