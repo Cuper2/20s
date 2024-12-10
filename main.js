@@ -539,7 +539,7 @@ import * as TABLE from "./table.js";
             button.x = position.x;
             button.y = position.y;
 
-            // Events for clicking buttons
+             // Events for clicking buttons
             button.interactive = true;
             button.buttonMode = true;
             button.on('pointerdown', () => {
